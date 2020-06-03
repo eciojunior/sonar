@@ -1,0 +1,35 @@
+version: '3.2'
+services:
+   sonarqube:
+       image: sonarqube:8.3.1-community
+       ports:
+         - "9000:9000"
+       volumes:
+         - type: bind
+           source: ./sonarqube/extensions
+           target: /opt/sonarqube/extensions
+         - type: bind
+           source: ./sonarqube/data
+           target: /opt/sonarqube/data
+         - type: bind
+           source: ./sonarqube/log
+           target: /opt/sonarqube/log
+       depends_on:
+         - postgres
+       environment:
+         sonar.jdbc.url: "jdbc:postgresql://postgres:5432/sonarqube"
+         sonar.jdbc.username: sonarqube
+         sonar.jdbc.password: sonarqube
+   postgres:
+       image: postgres:12.3
+       expose:
+         - "9001"
+       ports:
+         - "9001:5432"
+       volumes:
+         - type: bind
+           source: ./postgresql
+           target: /var/lib/postgresql
+       environment:
+         POSTGRES_USER: sonarqube
+         POSTGRES_PASSWORD: sonarqube
